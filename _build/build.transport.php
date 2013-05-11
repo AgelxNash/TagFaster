@@ -7,7 +7,7 @@ set_time_limit(0);
 
 define('PKG_NAME','TagFaster');
 define('PKG_NAME_LOWER','tagfaster');
-define('PKG_VERSION','1.0.1');
+define('PKG_VERSION','1.1.1');
 define('PKG_RELEASE','pl');
 
 
