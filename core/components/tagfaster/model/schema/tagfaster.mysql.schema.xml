@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model package="tagfaster" baseClass="xPDOObject" platform="mysql" defaultEngine="MyISAM" version="1.1">
+	<object class="DocTags" table="site_content_tags" extends="xPDOObject">
+		<field key="doc_id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" />
+		<field key="tag_id" dbtype="int" precision="11" phptype="integer" null="false" index="pk" />
+		<field key="tv_id" dbtype="int" precision="11" phptype="integer" null="false" default="0" index="pk" />
+
+		<index alias="PRIMARY" name="PRIMARY" primary="true" unique="true" type="BTREE" >
+			<column key="tag_id" length="" collation="A" null="false" />
+			<column key="doc_id" length="" collation="A" null="false" />
+			<column key="tv_id" length="" collation="A" null="false" />
+		</index>
+		<index alias="dtt" name="dtt" primary="false" unique="true" type="BTREE" >
+			<column key="doc_id" length="" collation="A" null="false" />
+			<column key="tag_id" length="" collation="A" null="false" />
+			<column key="tv_id" length="" collation="A" null="false" />
+		</index>
+		<index alias="doc_id" name="doc_id" primary="false" unique="false" type="BTREE" >
+			<column key="doc_id" length="" collation="A" null="false" />
+		</index>
+		<index alias="tag_id" name="tag_id" primary="false" unique="false" type="BTREE" >
+			<column key="tag_id" length="" collation="A" null="false" />
+		</index>
+		<index alias="tv_id" name="tv_id" primary="false" unique="false" type="BTREE" >
+			<column key="tv_id" length="" collation="A" null="false" />
+		</index>
+	</object>
+	<object class="Tags" table="tags" extends="xPDOSimpleObject">
+		<field key="name" dbtype="varchar" precision="50" phptype="string" null="false" index="unique" />
+
+		<index alias="name" name="name" primary="false" unique="true" type="BTREE" >
+			<column key="name" length="" collation="A" null="false" />
+		</index>
+	</object>
+</model>
