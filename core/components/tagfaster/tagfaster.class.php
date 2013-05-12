@@ -25,6 +25,44 @@ class TagFaster {
 
         $this->modx->addPackage($this->package, $this->config['modelPath']);
     }
+	public function getCountTags($tv,$tag=''){
+		$query = array();
+		$count = 0;
+	 	if(!is_int($tv)){
+			$tmp = $this->modx->getObject('modTemplateVar', array('name' =>$tv));
+			if(is_object($tmp)){
+				$tv = $tmp->get('id');
+			}else{
+				$tv = false;
+				//@TODO: log;
+				$query = false;
+			}
+		} 
+		if(is_array($query)){
+			$query['tv_id'] = $tv;
+		} 
+		
+		if($tag!=''){
+			$id=$this->modx->getObject("Tags",array("name"=>$tag))->get('id');
+			if($id){
+				$query['tag_id']=$id;
+			}else{
+				$query = false;
+			}
+		}
+		if(is_array($query)){
+    	    $xDoc = $this->modx->getCollection("DocTags",$query);
+            $doc=array();
+            foreach($xDoc as $item){
+                $doc[]=$item->get('doc_id');
+            }
+            $xModxDoc = $this->modx->newQuery("modResource")->where(array("id:IN"=>$doc,"deleted:="=>0,"published:="=>1));
+            $count = $this->modx->getCount("modResource",$xModxDoc);
+        }else{
+            $count=0;
+        }
+        return $count;
+	}
 	public function setNewTag($docID,$tvID,array $tags){
 		$count = array('new'=>array(),'old'=>array(),'del'=>array());
 		
