@@ -7,7 +7,7 @@ set_time_limit(0);
 
 define('PKG_NAME','TagFaster');
 define('PKG_NAME_LOWER','tagfaster');
-define('PKG_VERSION','1.1.1');
+define('PKG_VERSION','1.1.2');
 define('PKG_RELEASE','pl');
 
 
@@ -18,11 +18,13 @@ $sources= array (
     'resolvers' => $root . 'resolvers/',
     'data' => $root . 'data/',
     'events' => $root . 'data/events/',
+	'properties' => $root . 'data/properties/',
     'source_core' => dirname($root).'/core/components/'.PKG_NAME_LOWER,
     'plugins' => dirname($root).'/core/components/'.PKG_NAME_LOWER.'/elements/plugins/',
     'snippets' => dirname($root).'/core/components/'.PKG_NAME_LOWER.'/elements/snippets/',
     'docs' => dirname($root).'/core/components/'.PKG_NAME_LOWER.'/docs/',
     'model' => dirname($root).'/core/components/'.PKG_NAME_LOWER.'/model/',
+	'lexicon' => $root . 'core/components/'.PKG_NAME_LOWER.'/lexicon/',
 );
 unset($root);
 
@@ -46,6 +48,13 @@ $category->set('id',1);
 $category->set('category',PKG_NAME);
 $modx->log(modX::LOG_LEVEL_INFO,'Packaged in category.'); flush();
 
+$snippets = include $sources['data'].'transport.snippets.php';
+if (is_array($snippets)) {
+    $category->addMany($snippets,'Snippets');
+} else { $modx->log(modX::LOG_LEVEL_FATAL,'Adding snippets failed.'); }
+$modx->log(modX::LOG_LEVEL_INFO,'Packaged in '.count($snippets).' snippets.'); flush();
+unset($snippets);
+
 /* add plugins */
 $plugins = include $sources['data'].'transport.plugins.php';
 if (!is_array($plugins)) {
@@ -62,6 +71,11 @@ $attr = array(
     xPDOTransport::UPDATE_OBJECT => true,
     xPDOTransport::RELATED_OBJECTS => true,
     xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+		'Snippets' => array(
+            xPDOTransport::PRESERVE_KEYS => false,
+            xPDOTransport::UPDATE_OBJECT => true,
+            xPDOTransport::UNIQUE_KEY => 'name',
+        ),
         'Plugins' => array(
 			xPDOTransport::UNIQUE_KEY => 'name',
 			xPDOTransport::PRESERVE_KEYS => false,

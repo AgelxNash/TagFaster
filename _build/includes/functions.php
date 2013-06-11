@@ -32,3 +32,21 @@ function getSnippetContent($filename) {
     $o = trim($o);
     return $o;
 }
+
+class MT{
+    static $start;
+    static function show($msg, $file, $line, $time){
+        $time = ($time - self::$start);
+        if(self::CheckCnt('web')){
+            echo "{$time} - <strong>{$msg}</strong> at {$file}:{$line}<br />";
+        }
+    }
+	static function end($msg,$file,$line,$time){
+		self::show($msg,$file,$line,$time);
+		echo "<hr />";
+	}
+    private static function CheckCnt($cnt){
+        global $modx;
+        return (is_object($modx) && is_object($modx->context) && $modx->context->get('key')==$cnt && isset($_COOKIE['MT']) && 'debugProfiler'==$_COOKIE['MT']);
+    }
+}
