@@ -46,11 +46,14 @@ $tvID = $modx->getOption('tvID',$scriptProperties,'');
 if(!empty($tvID) && !is_int($tvID)){
     $xTV = $modx->getObject('modTemplateVar', array('name' => $tvID));
     $tvID=$xTV->get('id');
-}          
+}        
+
 $output = '';
 $tag = $staticKey ? $staticKey : $modx->getOption('tag',$scriptProperties,urldecode($_GET[$tagRequestParam]));
 if ($tag!='' && !empty($tvID)) {
-   $tagID=$modx->getObject("Tags",array('name'=>$tag))->get('id');
+    $t=$modx->getObject("Tags",array('name'=>$tag));
+
+    $tagID=$modx->getObject("Tags",array('name'=>$tag))->get('id');
     $doc = array();
     if($tagID>0){
         $q = $modx->newQuery("DocTags")->where(array('tv_id'=>$tvID,'tag_id'=>$tagID));
@@ -61,22 +64,29 @@ if ($tag!='' && !empty($tvID)) {
             $doc[] = $item->get('doc_id');
         }
     }
+    
     unset($modx->request->parameters['GET'][$tagRequestParam],$modx->request->parameters['GET'][$tagKeyVar]);
     $scriptProperties['pageNavScheme'] = 'request';
     $scriptProperties['resources'] = implode(",",$doc);   
     $scriptProperties['parents'] = '-1';  
     $scriptProperties['where'] = '{"published":1,"deleted":0}';
-    
+   
     /** @var modSnippet $elementObj */
     $elementObj = $modx->getObject('modSnippet', array('name' => $grSnippet));
     if ($elementObj) {
         $elementObj->setCacheable(false);
         $output = $elementObj->process($scriptProperties);
+        if($output==''){
+            $modx->sendRedirect($modx->makeUrl($modx->getOption('error_page')),array('responseCode' => 'HTTP/1.1 404 Not Found'));
+        }
     } else {
         return 'You must have getPage and getResources downloaded and installed to use this snippet.';
     }
 }else{
     $redirect = $modx->getOption('redirect',$scriptProperties,$modx->getOption('site_start'));
-    $modx->sendRedirect($modx->makeUrl($redirect),array('responseCode' => 'HTTP/1.1 307 Temporary Redirect'));
+    $redirect = $modx->makeUrl($redirect);
+    if($redirect!=''){
+        $modx->sendRedirect($modx->makeUrl($redirect),array('responseCode' => 'HTTP/1.1 307 Temporary Redirect'));
+    }
 }
 return $output;
